@@ -1,0 +1,17 @@
+.todoapp {
+  background: #fff;
+  margin: 200px 0 40px;
+  position: relative;
+  box-shadow: 0 2px 4px 0 #00000033,
+    0 25px 50px 0 #0000001a;
+
+  &__title {
+    position: absolute;
+    top: -190px;
+    width: 100%;
+    font-size: 100px;
+    font-weight: 100;
+    text-align: center;
+    color: #af2f2f26;
+  }
+}

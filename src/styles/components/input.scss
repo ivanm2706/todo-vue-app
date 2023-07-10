@@ -1,0 +1,52 @@
+.input {
+  &::placeholder {
+    font-style: italic;
+    font-weight: 300;
+    color: #e6e6e6;
+  }
+
+  &--newTodo {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 24px;
+    padding: 16px 16px 16px 60px;
+    border: none;
+    background: #00000003;
+    box-shadow: inset 0 -2px 1px #00000008;
+    outline: none;
+  }
+
+  &--edit {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 24px;
+    display: none;
+    padding: 6px;
+    border: 1px solid #999;
+    box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  &--toggle {
+    width: 40px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    border: none;
+    opacity: 0;
+    cursor: pointer;
+    height: 40px;
+    background: none;
+  }
+
+  &--toggleAll {
+    width: 1px;
+    height: 1px;
+    border: none;
+    opacity: 0;
+    position: absolute;
+    right: 100%;
+    bottom: 100%;
+    background: none;
+  }
+}

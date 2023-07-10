@@ -1,0 +1,14 @@
+.notification {
+  position: absolute;
+  background-color: rgba(175, 47, 47, 0.1490196078);
+  width: 100%;
+  height: 50px;
+  bottom: -85px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: red;
+  font-size: 22px;
+  letter-spacing: 1.2px;
+}
