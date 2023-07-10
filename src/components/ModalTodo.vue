@@ -47,7 +47,7 @@ export default {
           </tbody>
         </table>
 
-        <div v-else class="modal__noStatistic">no statiistics yet</div>
+        <div v-else class="modal__noStatistic">no changes yet</div>
       </div>
 
       <button

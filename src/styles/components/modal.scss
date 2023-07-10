@@ -19,12 +19,14 @@
 
   &__created {
     margin-block-end: 21px;
+    text-align: center;
   }
 
   &__content {
     position: absolute;
     max-width: 700px;
-
+    min-width: 500px;
+    min-height: 250px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1019607843);
     border: 1px solid #e6e6e6;
     border-radius: 2px;
