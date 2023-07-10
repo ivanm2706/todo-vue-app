@@ -3,50 +3,71 @@ export default {
   name: 'TodoItem',
   props: {
     index: Number,
-    todo: Object,
+    todo: Object
   },
   data() {
     return {
       editing: false,
-      newTitle: this.todo.title,
-    };    
+      newTitle: this.todo.title
+    }
   },
-  emits: ['update', 'delete'],
+  emits: ['update', 'delete', 'showModal'],
   methods: {
     toggle() {
       this.$emit('update', {
         ...this.todo,
         completed: !this.todo.completed,
-      });
+        changes: [
+          ...this.todo.changes,
+          {
+            date: Date.now(),
+            field: 'completed',
+            previousValue: this.todo.completed,
+            updatedValue: !this.todo.completed
+          }
+        ]
+      })
     },
     remove() {
-      this.$emit('delete');
+      this.$emit('delete')
+    },
+    showInfo() {
+      this.$emit('showModal')
     },
     edit() {
-      this.newTitle = this.todo.title;
-      this.editing = true;
+      this.newTitle = this.todo.title
+      this.editing = true
 
       this.$nextTick(() => {
-        this.$refs['edit-field'].focus();
-      });      
+        this.$refs['edit-field'].focus()
+      })
     },
     rename() {
       if (this.newTitle === this.todo.title) {
-        this.editing = false;
-        return;
+        this.editing = false
+        return
       }
 
       if (!this.newTitle) {
-        this.editing = false;
-        return;
+        this.editing = false
+        return
       }
-      
+
       this.$emit('update', {
         ...this.todo,
         title: this.newTitle,
-      });
+        changes: [
+          ...this.todo.changes,
+          {
+            date: Date.now(),
+            field: 'title',
+            previousValue: this.todo.title,
+            updatedValue: this.newTitle
+          }
+        ]
+      })
 
-      this.editing = false;
+      this.editing = false
     }
   }
 }
@@ -56,7 +77,7 @@ export default {
   <li
     class="todoList__item"
     :class="{
-      'todoList__item--editing': editing,
+      'todoList__item--editing': editing
     }"
   >
     <div class="todoList__view">
@@ -69,18 +90,16 @@ export default {
       <p
         class="todoList__toggleLabel"
         :class="{
-          'todoList__toggleLabel--completed': todo.completed,
+          'todoList__toggleLabel--completed': todo.completed
         }"
         @dblclick="edit"
       >
         {{ todo.title }}
       </p>
-  
-      <button
-        type="button"
-        class="button button--destroy todoList__destroy"
-        @click="remove"
-      />
+
+      <button type="button" class="button button--info todoList__buttons" @click="showInfo" />
+
+      <button type="button" class="button button--destroy todoList__buttons" @click="remove" />
     </div>
 
     <input

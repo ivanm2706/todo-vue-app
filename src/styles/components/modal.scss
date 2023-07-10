@@ -1,0 +1,44 @@
+.modal {
+  position: absolute;
+  background: #fff4f4a3;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  &__header {
+    background-color: #af2f2f26;
+    padding: 20px 10px;
+    font-size: 20px;
+    word-wrap: break-word;
+  }
+
+  &__body {
+    padding: 20px 10px;
+  }
+
+  &__created {
+    margin-block-end: 21px;
+  }
+
+  &__content {
+    position: absolute;
+    max-width: 700px;
+
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1019607843);
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    background: #fff;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__noStatistic {
+    background-color: #ffffc163;
+    text-align: center;
+    width: 170px;
+    margin: 0 auto;
+    padding-block: 10px;
+  }
+}

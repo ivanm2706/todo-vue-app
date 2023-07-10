@@ -1,8 +1,9 @@
 <script>
-import FooterTodo from './components/FooterTodos.vue';
-import TodoItem from './components/TodoItem.vue';
-import HeaderTodo from './components/Header.vue';
-import Notification from './components/NotificationError.vue';
+import FooterTodo from './components/FooterTodos.vue'
+import TodoItem from './components/TodoItem.vue'
+import HeaderTodo from './components/Header.vue'
+import Notification from './components/NotificationError.vue'
+import ModalTodo from './components/ModalTodo.vue'
 
 export default {
   components: {
@@ -10,65 +11,85 @@ export default {
     TodoItem,
     HeaderTodo,
     Notification,
-},
+    ModalTodo
+  },
   data() {
-    let todos = [];
+    let todos = []
 
     try {
-      todos = JSON.parse(localStorage.getItem('todos') || '[]');
-    } catch (e) { /* empty */ }
+      todos = JSON.parse(localStorage.getItem('todos') || '[]')
+    } catch (e) {
+      /* empty */
+    }
 
-    
     return {
       todos,
       status: 'all',
       notificationMessage: '',
+      isModal: false,
+      statisticsTodo: null
     }
   },
   computed: {
     activeTodos() {
-      return this.todos.filter(todo => !todo.completed);
+      return this.todos.filter((todo) => !todo.completed)
     },
     isCompletedTodo() {
-      return this.todos.some(todo => todo.completed === false);
+      return this.todos.some((todo) => todo.completed === false)
     },
     visibleTodos() {
+      let todosCopy = [...this.todos];
+
       if (this.status === 'all') {
-        return this.todos;
+        return todosCopy;
       }
 
-      return this.todos.filter(({ completed }) => {
-        return this.status === 'active'
-          ? completed
-          : !completed
-      });
-    },
+      return todosCopy.filter(({ completed }) => {
+          return this.status === 'active' ? completed : !completed
+        });
+    }
   },
   methods: {
     addTodo(todo) {
-      this.todos.push(todo);
+      this.todos = [...this.todos, todo]
     },
     removeCompletedTodos() {
-      this.todos = this.todos.filter(todo => !todo.completed);
+      this.todos = this.todos.filter((todo) => !todo.completed)
     },
     toggleAll() {
-      this.todos = this.todos.map(todo => {
-        todo.completed = true;
+      this.todos = this.todos.map((todo) => {
+        todo.completed = true
 
-        return todo;
+        return todo
       })
     },
+    updatedTodo(id, props) {
+      this.todos = this.todos.map((todo) => {
+        if (todo.id === id) {
+          todo = { ...todo, ...props }
+        }
+
+        return todo
+      })
+    },
+    deleteTodo(id) {
+      this.todos = this.todos.filter((todo) => todo.id !== id)
+    },
+    showModal(id) {
+      this.statisticsTodo = this.todos.find((todo) => id === todo.id)
+      this.isModal = true
+      console.log(this.statisticsTodo.changes)
+    }
   },
   watch: {
     todos: {
       deep: true,
       handler() {
-        localStorage.setItem('todos', JSON.stringify(this.todos));
+        localStorage.setItem('todos', JSON.stringify(this.todos))
       }
     }
-  },
+  }
 }
-
 </script>
 
 <template>
@@ -82,18 +103,15 @@ export default {
     />
 
     <section class="section">
-      <TransitionGroup
-        name="list"
-        tag="ul"
-        class="todoList"
-      >
+      <TransitionGroup name="list" tag="ul" class="todoList">
         <TodoItem
-          v-for="todo, index of visibleTodos"
+          v-for="(todo, index) of visibleTodos"
           :key="todo.id"
           :index="index"
           :todo="todo"
-          @update="Object.assign(todo, $event)"
-          @delete="todos.splice(todos.indexOf(todo), 1)"
+          @update="updatedTodo(todo.id, $event)"
+          @delete="deleteTodo(todo.id)"
+          @showModal="showModal(todo.id)"
         />
       </TransitionGroup>
     </section>
@@ -106,11 +124,15 @@ export default {
       @removeCompletedTodos="removeCompletedTodos"
     />
 
-    <Notification
-      v-if="notificationMessage"
-      :message="notificationMessage"
-    />
+    <Notification v-if="notificationMessage" :message="notificationMessage" />
   </div>
+
+  <ModalTodo
+    :isModal="isModal"
+    :statisticsTodo="statisticsTodo"
+    @closeModal="isModal = false"
+    v-if="isModal"
+  />
 </template>
 
 <style>

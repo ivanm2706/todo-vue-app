@@ -3,34 +3,36 @@ export default {
   name: 'HeaderTodo',
   props: {
     modelValue: String,
-    isCompletedTodo: Boolean,
+    isCompletedTodo: Boolean
   },
   emits: ['addTodo', 'toggleAll', 'update:modelValue'],
   data() {
     return {
-      title: '',
+      title: ''
     }
   },
   mounted() {
-    this.$refs['title'].focus();
+    this.$refs['title'].focus()
   },
   methods: {
     hendlerSubmit() {
       if (!this.title) {
-        this.$emit('update:modelValue', 'cant be empty');
+        this.$emit('update:modelValue', 'cant be empty')
 
-        setTimeout(this.$emit, 2000, 'update:modelValue', '');
+        setTimeout(this.$emit, 2000, 'update:modelValue', '')
 
-        return;
+        return
       }
 
       this.$emit('addTodo', {
         id: Date.now(),
+        created: Date.now(),
         title: this.title,
         completed: false,
-      });
+        changes: []
+      })
 
-      this.title = '';
+      this.title = ''
     }
   }
 }
@@ -49,11 +51,8 @@ export default {
         :disabled="!isCompletedTodo"
         @click="$emit('toggleAll')"
       />
-      
-      <label
-        class="form__label"
-        htmlFor="toggle-all"
-      />
+
+      <label class="form__label" htmlFor="toggle-all" />
 
       <input
         type="text"

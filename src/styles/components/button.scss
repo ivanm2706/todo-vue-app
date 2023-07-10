@@ -1,28 +1,57 @@
+%buttonInTodo {
+  display: none;
+  position: absolute;
+  cursor: pointer;
+  transition: color 0.2s ease-out;
+}
+
 .button {
   border: 0;
   background: none;
 
+  &--info {
+    @extend %buttonInTodo;
+    width: 20px;
+    height: 20px;
+    right: 1px;
+    bottom: 1px;
+    background-image: url('data:image/svg+xml;utf8,%3Csvg%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20opacity%3D%220.5%22%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20stroke%3D%22%231C274C%22%20stroke-width%3D%221.5%22/%3E%3Cpath%20d%3D%22M12%2017V11%22%20stroke%3D%22%231C274C%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20transform%3D%22matrix%281%200%200%20-1%2011%209%29%22%20fill%3D%22%231C274C%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+    &:hover:after {
+      content: 'show statistics';
+      position: absolute;
+      top: -200%;
+      left: 100%;
+      padding: 5px;
+      background-color: #f5f5f5;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  }
+
   &--destroy {
-    display: none;
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 10px;
-    bottom: 0;
+    @extend %buttonInTodo;
+    font-size: 30px;
+    top: -9px;
+    right: -9px;
     width: 40px;
     height: 40px;
-    margin: auto 0;
-    font-size: 30px;
     color: #cc9a9a;
-    transition: color 0.2s ease-out;
 
     &:hover {
       color: #af5b5e;
     }
-    
+
     &:after {
-      content: "×";
+      content: '×';
     }
+  }
+
+  &--modal {
+    display: block;
   }
 
   &--clearCompleted {

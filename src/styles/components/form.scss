@@ -12,14 +12,14 @@
     cursor: pointer;
 
     &:before {
-      content: "❯";
+      content: '❯';
       font-size: 22px;
       color: #e6e6e6;
       padding: 10px 27px;
     }
   }
 
-  &__toggleAll {    
+  &__toggleAll {
     &:checked + label:before {
       color: #737373;
     }

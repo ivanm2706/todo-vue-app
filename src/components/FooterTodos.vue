@@ -10,7 +10,7 @@ export default {
       filterButtons: ['all', 'active', 'completed']
     }
   },
-  emits: ['update:modelValue', 'removeCompletedTodos'],
+  emits: ['update:modelValue', 'removeCompletedTodos']
 }
 </script>
 
@@ -22,16 +22,12 @@ export default {
     </p>
 
     <ul class="filters">
-      <li
-        class="filters__list"
-        v-for="button of filterButtons"
-        :key="button"
-      >
+      <li class="filters__list" v-for="button of filterButtons" :key="button">
         <button
           type="button"
           class="filters__button"
           :class="{
-            'filters__button--selected': button === modelValue,
+            'filters__button--selected': button === modelValue
           }"
           @click="$emit('update:modelValue', button)"
         >
