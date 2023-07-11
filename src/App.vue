@@ -1,9 +1,10 @@
 <script>
-import FooterTodo from './components/FooterTodos.vue'
-import TodoItem from './components/TodoItem.vue'
-import HeaderTodo from './components/Header.vue'
-import Notification from './components/NotificationError.vue'
-import ModalTodo from './components/ModalTodo.vue'
+import FooterTodo from './components/FooterTodos.vue';
+import TodoItem from './components/TodoItem.vue';
+import HeaderTodo from './components/Header.vue';
+import Notification from './components/NotificationError.vue';
+import Statistics from './components/StatisticsTodo.vue';
+import getDataFromLocaleStorage from './helpers/getFromLocaleStorage';
 
 export default {
   components: {
@@ -11,23 +12,17 @@ export default {
     TodoItem,
     HeaderTodo,
     Notification,
-    ModalTodo
+    Statistics
   },
   data() {
-    let todos = []
-
-    try {
-      todos = JSON.parse(localStorage.getItem('todos') || '[]')
-    } catch (e) {
-      /* empty */
-    }
+    const todos = getDataFromLocaleStorage('todos') || [];
+    const statistics = getDataFromLocaleStorage('statistics') || [];
 
     return {
       todos,
+      statistics,
       status: 'all',
       notificationMessage: '',
-      isModal: false,
-      statisticsTodo: null
     }
   },
   computed: {
@@ -45,40 +40,122 @@ export default {
       }
 
       return todosCopy.filter(({ completed }) => {
-          return this.status === 'active' ? completed : !completed
-        });
+        return this.status === 'active' ? completed : !completed
+      });
     }
   },
   methods: {
-    addTodo(todo) {
-      this.todos = [...this.todos, todo]
+    addTodo(todo, isRestore = false) {
+      this.todos = [...this.todos, todo];
+
+      if (isRestore) {
+        this.statistics = this.statistics.map(statistic => {
+          if (statistic.id === todo.id) {
+            statistic.deleted = null;
+          }
+
+          return statistic;
+        });
+
+        return;
+      }
+      
+      this.statistics = [...this.statistics, {
+        id: todo.id,
+        created: new Date(todo.id),
+        changes: [],
+        deleted: null,
+      }];
     },
     removeCompletedTodos() {
-      this.todos = this.todos.filter((todo) => !todo.completed)
-    },
-    toggleAll() {
-      this.todos = this.todos.map((todo) => {
-        todo.completed = true
+      const removedTodoIds = {};
+      this.todos = this.todos.filter((todo) => {
+        if (todo.completed) {
+          removedTodoIds[todo.id] = {
+            title: todo.title,
+            completed: todo.completed,
+          };
+        }
 
-        return todo
+        return !todo.completed;
+      });
+      this.statistics = this.statistics.map(statistic => {
+        if (removedTodoIds[statistic.id]) {
+          statistic.deleted = {
+            date: new Date(),
+            ...removedTodoIds[statistic.id],
+          };
+        }
+
+        return statistic;
       })
     },
-    updatedTodo(id, props) {
+    toggleAll() {
+      const changedTodoIds = [];
+      this.todos = this.todos.map((todo) => {
+        if (!todo.completed) {
+          changedTodoIds.push(todo.id);
+          todo.completed = true;
+        }
+
+        return todo;
+      });
+
+      this.statistics = this.statistics.map(todo => {
+        if (changedTodoIds.includes(todo.id)) {
+          todo.changes.push({
+            date: new Date(),
+            field: 'completed',
+            previousValue: false,
+            updatedTodo: true,
+          })
+        }
+
+        return todo;
+      });
+    },
+    updatedTodo(id, { updateTodo, updateStatistics }) {
       this.todos = this.todos.map((todo) => {
         if (todo.id === id) {
-          todo = { ...todo, ...props }
+          todo = { ...todo, ...updateTodo }
         }
 
         return todo
-      })
+      });
+
+      this.statistics = this.statistics.map(item => {
+        if (item.id === updateStatistics.id) {
+          item.changes.push(updateStatistics.change);
+        }
+
+        return item;
+      });
     },
     deleteTodo(id) {
-      this.todos = this.todos.filter((todo) => todo.id !== id)
+      const copyTodos = [...this.todos];
+      const index = copyTodos.findIndex(todo => todo.id === id);
+
+      if (index === -1) {
+        return;
+      }
+
+      this.statistics = this.statistics.map(item => {
+        if (item.id === id) {
+          item.deleted = {
+            date: new Date(),
+            title: copyTodos[index].title,
+            completed: copyTodos[index].completed,
+          };
+        }
+
+        return item;
+      });
+
+      copyTodos.splice(index, 1);
+      this.todos = [...copyTodos];
     },
-    showModal(id) {
-      this.statisticsTodo = this.todos.find((todo) => id === todo.id)
-      this.isModal = true
-      console.log(this.statisticsTodo.changes)
+    deleteImediately(id) {
+      this.statistics = this.statistics.filter(statistic => id !== statistic.id);
     }
   },
   watch: {
@@ -86,6 +163,12 @@ export default {
       deep: true,
       handler() {
         localStorage.setItem('todos', JSON.stringify(this.todos))
+      }
+    },
+    statistics: {
+      deep: true,
+      handler() {
+        localStorage.setItem('statistics', JSON.stringify(this.statistics))
       }
     }
   }
@@ -124,15 +207,27 @@ export default {
       @removeCompletedTodos="removeCompletedTodos"
     />
 
-    <Notification v-if="notificationMessage" :message="notificationMessage" />
+    <Notification
+      v-if="notificationMessage"
+      :message="notificationMessage"
+    />
   </div>
 
   <ModalTodo
     :isModal="isModal"
+    :todos="todos"
     :statisticsTodo="statisticsTodo"
-    @closeModal="isModal = false"
+    @closeModal="closeModal"
     v-if="isModal"
   />
+
+  <Statistics
+    :statistics="statistics"
+    @restoreTodo="addTodo($event, true)"
+    @deleteImediately="deleteImediately($event)"
+    :todos="todos"
+  />
+  
 </template>
 
 <style>

@@ -14,29 +14,34 @@ export default {
   emits: ['update', 'delete', 'showModal'],
   methods: {
     toggle() {
-      this.$emit('update', {
+      const updateTodo = {
         ...this.todo,
         completed: !this.todo.completed,
-        changes: [
-          ...this.todo.changes,
-          {
-            date: Date.now(),
-            field: 'completed',
-            previousValue: this.todo.completed,
-            updatedValue: !this.todo.completed
-          }
-        ]
-      })
+      };
+      const updateStatistics = {
+        id: this.todo.id,
+        change: {
+          date: Date.now(),
+          field: 'completed',
+          previousValue: this.todo.completed,
+          updatedValue: !this.todo.completed
+        },
+      };
+
+      this.$emit('update', {
+        updateTodo,
+        updateStatistics,
+      });
     },
     remove() {
-      this.$emit('delete')
+      this.$emit('delete');
     },
     showInfo() {
       this.$emit('showModal')
     },
     edit() {
-      this.newTitle = this.todo.title
-      this.editing = true
+      this.newTitle = this.todo.title;
+      this.editing = true;
 
       this.$nextTick(() => {
         this.$refs['edit-field'].focus()
@@ -53,18 +58,23 @@ export default {
         return
       }
 
-      this.$emit('update', {
+      const updateTodo = {
         ...this.todo,
         title: this.newTitle,
-        changes: [
-          ...this.todo.changes,
-          {
-            date: Date.now(),
-            field: 'title',
-            previousValue: this.todo.title,
-            updatedValue: this.newTitle
-          }
-        ]
+      };
+      const updateStatistics = {
+        id: this.todo.id,
+        change: {
+          date: Date.now(),
+          field: 'title',
+          previousValue: this.todo.title,
+          updatedValue: this.newTitle,
+        },
+      };
+
+      this.$emit('update', {
+        updateTodo,
+        updateStatistics,
       })
 
       this.editing = false
@@ -96,8 +106,6 @@ export default {
       >
         {{ todo.title }}
       </p>
-
-      <button type="button" class="button button--info todoList__buttons" @click="showInfo" />
 
       <button type="button" class="button button--destroy todoList__buttons" @click="remove" />
     </div>
